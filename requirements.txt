@@ -4,3 +4,4 @@ tzlocal<3
 pytz
 requests
 python-dotenv
+pydantic
