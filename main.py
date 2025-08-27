@@ -131,15 +131,15 @@ async def send_map(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Show this help message ℹ️"""
+    """Show this help message"""
     app = context.application
     help_lines = ["🤖 *Available Commands:*\n"]
 
     for handler in app.handlers[0]:  # 0 = default group
         if isinstance(handler, CommandHandler):
-            command = handler.commands[0]  # first command name
+            commands = ", ".join(f"/{c}" for c in handler.commands)
             description = handler.callback.__doc__ or "No description"
-            help_lines.append(f"/{command} – {description}")
+            help_lines.append(f"{commands} – {description}")
 
     help_text = "\n".join(help_lines)
     await update.message.reply_markdown_v2(help_text)
