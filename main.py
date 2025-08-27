@@ -45,8 +45,8 @@ def format_departure_time(dep: Departure) -> str:
     diff = int((dep_time - now).total_seconds() / 60)
 
     if diff <= 0:
-        return "Arr\\*"  # escape * for MarkdownV2
-    return f"{diff}m\\*"
+        return "Arr"  # escape * for MarkdownV2
+    return f"{diff}m"
 
 
 def get_nearby_stops(lat: str, lon: str) -> List[StopLocation]:
@@ -72,16 +72,14 @@ def get_departures(area_id: str) -> List[Departure]:
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Start the bot and request your location 📍"""
     location_button = KeyboardButton(text="📍 Send Location", request_location=True)
     reply_markup = ReplyKeyboardMarkup(
         [[location_button]], resize_keyboard=True, one_time_keyboard=True
     )
     await update.message.reply_text(
-        "Please share your location:", reply_markup=reply_markup
+        "Please share your location!", reply_markup=reply_markup
     )
-    # await update.message.reply_text(
-    #     "Hi! Send me your location and I’ll show you the nearest bus departures 🚍"
-    # )
 
 
 async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -96,7 +94,7 @@ async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     response_text = "🚌 Upcoming departures:\n\n"
 
-    for stop in nearby_stops[:3]:
+    for stop in nearby_stops:
         departures = get_departures(stop.extId)
         if not departures:
             continue
@@ -126,10 +124,33 @@ async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await update.message.reply_markdown_v2(response_text)
 
 
+async def send_map(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Show the Stockholm train map 🚇"""
+    with open("train_map.png", "rb") as photo:
+        await update.message.reply_photo(photo, caption="🚇 Stockholm Train Map")
+
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Show this help message ℹ️"""
+    app = context.application
+    help_lines = ["🤖 *Available Commands:*\n"]
+
+    for handler in app.handlers[0]:  # 0 = default group
+        if isinstance(handler, CommandHandler):
+            command = handler.commands[0]  # first command name
+            description = handler.callback.__doc__ or "No description"
+            help_lines.append(f"/{command} – {description}")
+
+    help_text = "\n".join(help_lines)
+    await update.message.reply_markdown_v2(help_text)
+
+
 def main():
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("map", send_map))
     app.add_handler(MessageHandler(filters.LOCATION, handle_location))
 
     app.run_polling()
