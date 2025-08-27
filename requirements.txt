@@ -5,3 +5,4 @@ pytz
 requests
 python-dotenv
 pydantic
+geopy
