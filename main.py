@@ -78,7 +78,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         [[location_button]], resize_keyboard=True, one_time_keyboard=True
     )
     await update.message.reply_text(
-        "Please share your location!", reply_markup=reply_markup
+        "Send your location to find nearby bus stops, or type /help to view available commands.",
+        reply_markup=reply_markup,
     )
 
 
@@ -106,14 +107,12 @@ async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
         sorted_groups = sorted(grouped.items(), key=lambda x: (x[0][0], x[0][1]))
 
-        # Escape stop name
         response_text += f"📍 *{escape_markdown(stop.name, version=2)}*\n"
 
         for (line, direction), deps in sorted_groups:
             deps.sort(key=lambda d: d.realtime)
             times = [format_departure_time(d) for d in deps[:3]]
 
-            # Escape line and direction
             safe_line = escape_markdown(line, version=2)
             safe_times = " \\| ".join(times)  # escape | for MarkdownV2
 
