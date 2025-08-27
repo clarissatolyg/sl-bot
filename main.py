@@ -17,6 +17,7 @@ from collections import defaultdict
 from datetime import datetime
 import pytz
 from telegram.helpers import escape_markdown
+from geopy.geocoders import Nominatim
 
 stockholm_tz = pytz.timezone("Europe/Stockholm")
 
@@ -86,6 +87,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     lat = update.message.location.latitude
     lon = update.message.location.longitude
+
+    geolocator = Nominatim(user_agent="my_geopy_app")
+    location = geolocator.reverse(lat + "," + lon)
+
+    if location.raw["address"]["country"] != "Sweden":
+        await update.message.reply_text("I can only find buses in Sweden :(")
+        return
 
     nearby_stops = get_nearby_stops(lat, lon)
 
