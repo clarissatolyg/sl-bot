@@ -42,6 +42,11 @@ class Agency(BaseModel):
     operator: str
 
 
+class Alert(BaseModel):
+    type: str
+    summary: str
+
+
 class Departure(BaseModel):
     scheduled: datetime
     realtime: datetime
@@ -53,5 +58,5 @@ class Departure(BaseModel):
     stop: Stop
     scheduled_platform: Platform
     realtime_platform: Platform
-    alerts: List[str]
+    alerts: List[Alert]
     is_realtime: bool
