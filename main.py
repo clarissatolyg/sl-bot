@@ -122,9 +122,10 @@ async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             times = [format_departure_time(d) for d in deps[:3]]
 
             safe_line = escape_markdown(line, version=2)
+            safe_direction = escape_markdown(direction, version=2)
             safe_times = " \\| ".join(times)  # escape | for MarkdownV2
 
-            response_text += f"🚍{safe_line:<4}: {safe_times}\n"
+            response_text += f"🚍{safe_line:<5}: {safe_times} — {safe_direction}\n"
 
         response_text += "\n"
 
