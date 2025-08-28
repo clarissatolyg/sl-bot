@@ -91,7 +91,7 @@ async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     geolocator = Nominatim(user_agent="my_geopy_app")
     location = geolocator.reverse(str(lat) + "," + str(lon))
 
-    if location.raw["address"]["country"] != "Sweden":
+    if location.raw["address"]["country"] != "Sverige":
         await update.message.reply_text("I can only find buses in Sweden :(")
         return
 
