@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -44,7 +44,8 @@ class Agency(BaseModel):
 
 class Alert(BaseModel):
     type: str
-    summary: str
+    summary: Optional[str] = None
+    extra: Dict[str, Any] = {}
 
 
 class Departure(BaseModel):
